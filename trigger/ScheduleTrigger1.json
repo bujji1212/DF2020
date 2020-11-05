@@ -1,0 +1,39 @@
+{
+	"name": "ScheduleTrigger1",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "MoveTransform - CopyBlobData",
+					"type": "PipelineReference"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "MoveTransform - CopyOnPremises",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"dbNamefromPipeline": "Mine_Mccoy",
+					"tblnamefrompipeline": "A",
+					"usernamefrompipeline": "testuser",
+					"pwdfrompipeline": "testuser@123",
+					"servernamefrompipeline": "seshukumar",
+					"destinationtable": "B"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2020-10-30T13:50:00Z",
+				"endTime": "2020-11-03T14:50:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}

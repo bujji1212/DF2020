@@ -1,0 +1,55 @@
+{
+	"name": "ParameterizeOnPremiseConnection",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "SqlServerOnPremises",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"dbName": {
+					"value": "@dataset().dbNamefromDS",
+					"type": "Expression"
+				},
+				"username": {
+					"value": "@dataset().usernamefromDS",
+					"type": "Expression"
+				},
+				"pwd": {
+					"value": "@dataset().pwdfromDS",
+					"type": "Expression"
+				},
+				"servername": {
+					"value": "@dataset().servernamefromDS",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"tableName": {
+				"type": "string"
+			},
+			"dbNamefromDS": {
+				"type": "string"
+			},
+			"usernamefromDS": {
+				"type": "string"
+			},
+			"pwdfromDS": {
+				"type": "string"
+			},
+			"servernamefromDS": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().tableName",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
