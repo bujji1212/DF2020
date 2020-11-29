@@ -1,9 +1,9 @@
 {
-	"name": "DataFlow-Aggregate",
+	"name": "DataFlow-Filter",
 	"properties": {
 		"activities": [
 			{
-				"name": "AggregateDF",
+				"name": "FilterDF",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "AggregateDF",
+						"referenceName": "FilterDF",
 						"type": "DataFlowReference"
 					},
 					"compute": {
