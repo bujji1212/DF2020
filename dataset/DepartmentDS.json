@@ -1,0 +1,33 @@
+{
+	"name": "DepartmentDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureLinkedSer1Input",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Department.csv",
+				"folderPath": "input",
+				"container": "azurecontainer1"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "DepID",
+				"type": "String"
+			},
+			{
+				"name": "DeptName",
+				"type": "String"
+			}
+		]
+	}
+}
