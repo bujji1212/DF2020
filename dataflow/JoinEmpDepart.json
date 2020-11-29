@@ -1,0 +1,31 @@
+{
+	"name": "JoinEmpDepart",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeeDS",
+						"type": "DatasetReference"
+					},
+					"name": "EmpStream"
+				},
+				{
+					"dataset": {
+						"referenceName": "DepartmentDS",
+						"type": "DatasetReference"
+					},
+					"name": "DepartStream"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "Join1"
+				}
+			],
+			"script": "source(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> EmpStream\nsource(output(\n\t\tDepID as string,\n\t\tDeptName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DepartStream\nEmpStream, DepartStream join(department == DepID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1"
+		}
+	}
+}
