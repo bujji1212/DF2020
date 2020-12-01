@@ -1,0 +1,53 @@
+{
+	"name": "ConditionalSpilitDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeesDS",
+						"type": "DatasetReference"
+					},
+					"name": "Employees"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputDSDF",
+						"type": "DatasetReference"
+					},
+					"name": "IT"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputDSDF",
+						"type": "DatasetReference"
+					},
+					"name": "HR"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputDSDF",
+						"type": "DatasetReference"
+					},
+					"name": "Payroll"
+				},
+				{
+					"dataset": {
+						"referenceName": "OutputDSDF",
+						"type": "DatasetReference"
+					},
+					"name": "Other"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ConditionalSplit1"
+				}
+			],
+			"script": "source(output(\n\t\tEmpId as short,\n\t\tEmpName as string,\n\t\tdepartment as short,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Employees\nEmployees split(equals(department,1),\n\tequals(department,2),\n\tequals(department,3),\n\tdisjoint: false) ~> ConditionalSplit1@(ITEmployees, HREmployees, FinanceEmployees, Other)\nConditionalSplit1@ITEmployees sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['ITEmployees.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> IT\nConditionalSplit1@HREmployees sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['HREmployees.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> HR\nConditionalSplit1@FinanceEmployees sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Finance.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Payroll\nConditionalSplit1@Other sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['OtherEmployees.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Other"
+		}
+	}
+}
