@@ -1,9 +1,9 @@
 {
-	"name": "DataFlow-DepartExists",
+	"name": "DataFlow-Union",
 	"properties": {
 		"activities": [
 			{
-				"name": "DepartExistsDF",
+				"name": "UnionDF",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "DepartExistsDF",
+						"referenceName": "UnionDF",
 						"type": "DataFlowReference"
 					},
 					"compute": {
