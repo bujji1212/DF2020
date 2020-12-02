@@ -1,0 +1,31 @@
+{
+	"name": "LookupDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeesDS",
+						"type": "DatasetReference"
+					},
+					"name": "employees"
+				},
+				{
+					"dataset": {
+						"referenceName": "DepartmentDS",
+						"type": "DatasetReference"
+					},
+					"name": "department"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "Lookup1"
+				}
+			],
+			"script": "source(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> employees\nsource(output(\n\t\tDepID as string,\n\t\tDeptName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> department\nemployees, department lookup(department == DepID,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> Lookup1"
+		}
+	}
+}
