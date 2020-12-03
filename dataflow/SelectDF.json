@@ -1,0 +1,32 @@
+{
+	"name": "SelectDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmployeesDS",
+						"type": "DatasetReference"
+					},
+					"name": "employees"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputDSDF",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Select1"
+				}
+			],
+			"script": "source(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> employees\nemployees select(mapColumn(\n\t\tEmpId,\n\t\tCountry,\n\t\tName = EmpName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['SelectOutputEmp.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+		}
+	}
+}
