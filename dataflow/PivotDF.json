@@ -12,13 +12,21 @@
 					"name": "employees"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "OutputDSDF",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "Pivot1"
 				}
 			],
-			"script": "source(output(\n\t\tEmpId as short,\n\t\tEmpName as string,\n\t\tdepartment as short,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> employees\nemployees pivot(groupBy(department),\n\tpivotBy(Country),\n\tEmployees = count(EmpId),\n\tcolumnNaming: '$N$V',\n\tlateral: true) ~> Pivot1"
+			"script": "source(output(\n\t\tEmpId as short,\n\t\tEmpName as string,\n\t\tdepartment as short,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> employees\nemployees pivot(groupBy(department),\n\tpivotBy(Country),\n\t{} = count(EmpId),\n\tcolumnNaming: '$N$V',\n\tlateral: true) ~> Pivot1\nPivot1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['PivotOutputEmp.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 		}
 	}
 }
