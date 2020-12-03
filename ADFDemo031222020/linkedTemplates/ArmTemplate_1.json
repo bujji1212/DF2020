@@ -17,6 +17,50 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/PayrollEmployeesDS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureLinkedSer1Input",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "PayrollEmployees.csv",
+						"folderPath": "input",
+						"container": "azurecontainer1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "EmpId",
+						"type": "String"
+					},
+					{
+						"name": "EmpName",
+						"type": "String"
+					},
+					{
+						"name": "department",
+						"type": "String"
+					},
+					{
+						"name": "Country",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SqlServerOnPremises')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -854,7 +898,7 @@
 							"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink1"
 						}
 					],
-					"script": "section Section1;\r\nshared DepartmentDS = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azurestorage03122020.blob.core.windows.net/azurecontainer1/input/Department.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared EmployeeDS = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azurestorage03122020.blob.core.windows.net/azurecontainer1/input/Employee.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = DepartmentDS,\r\n  #\"Merged queries\" = Table.NestedJoin(Source, {\"DepID\"}, EmployeeDS, {\"EmpId\"}, \"EmployeeDS\", JoinKind.Inner),\r\n  #\"Expanded EmployeeDS\" = Table.ExpandTableColumn(#\"Merged queries\", \"EmployeeDS\", {\"EmpId\", \"EmpName\", \"department\", \"Country\"}, {\"EmployeeDS.EmpId\", \"EmployeeDS.EmpName\", \"EmployeeDS.department\", \"EmployeeDS.Country\"}),\r\n  #\"Removed columns\" = Table.RemoveColumns(#\"Expanded EmployeeDS\", {\"DepID\"}),\r\n  #\"Reordered columns\" = Table.ReorderColumns(#\"Removed columns\", {\"EmployeeDS.EmpId\", \"EmployeeDS.EmpName\", \"DeptName\", \"EmployeeDS.department\", \"EmployeeDS.Country\"}),\r\n  #\"Removed columns 1\" = Table.RemoveColumns(#\"Reordered columns\", {\"EmployeeDS.department\"})\r\nin\r\n  #\"Removed columns 1\";\r\n"
+					"script": "section Section1;\r\nshared DepartmentDS = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azurestorage03122020.blob.core.windows.net/azurecontainer1/input/Department.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared EmployeeDS = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azurestorage03122020.blob.core.windows.net/azurecontainer1/input/Employee.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = DepartmentDS,\r\n  #\"Merged queries\" = Table.NestedJoin(Source, {\"DepID\"}, EmployeeDS, {\"department\"}, \"EmployeeDS\", JoinKind.Inner),\r\n  #\"Expanded EmployeeDS\" = Table.ExpandTableColumn(#\"Merged queries\", \"EmployeeDS\", {\"EmpId\", \"EmpName\", \"Country\"}, {\"EmployeeDS.EmpId\", \"EmployeeDS.EmpName\", \"EmployeeDS.Country\"})\r\nin\r\n  #\"Expanded EmployeeDS\";\r\n"
 				}
 			},
 			"dependsOn": []
@@ -947,7 +991,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/SelectDF')]",
+			"name": "[concat(parameters('factoryName'), '/SchemeDriftDF')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -956,10 +1000,10 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "EmployeesDS",
+								"referenceName": "EmployeeDS_SchemeDrift",
 								"type": "DatasetReference"
 							},
-							"name": "employees"
+							"name": "employee"
 						}
 					],
 					"sinks": [
@@ -971,47 +1015,8 @@
 							"name": "sink1"
 						}
 					],
-					"transformations": [
-						{
-							"name": "Select1"
-						}
-					],
-					"script": "source(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> employees\nemployees select(mapColumn(\n\t\tEmpId,\n\t\tCountry,\n\t\tName = EmpName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nSelect1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['SelectOutputEmp.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SortDF')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "EmployeesForSortDS",
-								"type": "DatasetReference"
-							},
-							"name": "Emp"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "OutputDSDF",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Sort1"
-						}
-					],
-					"script": "source(output(\n\t\tEmpName as string,\n\t\tdepartment as short,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Emp\nEmp sort(asc(EmpName, true),\n\tcaseInsensitive: true,\n\tpartitionBy('hash', 1)) ~> Sort1\nSort1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['empnamesorting.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+					"transformations": [],
+					"script": "source(output(\n\t\tEmpId as short,\n\t\tEmpName as string,\n\t\tSalary as short,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tinferDriftedColumnTypes: true) ~> employee\nemployee sink(allowSchemaDrift: true,\n\tvalidateSchema: true,\n\tpartitionFileNames:['SchemaOutput.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 				}
 			},
 			"dependsOn": []
