@@ -26,7 +26,7 @@
 					"name": "FilterOutput"
 				}
 			],
-			"script": "source(output(\n\t\tColumn_1 as string,\n\t\tColumn_2 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Employees\nEmployees filter(equals(department, '1')) ~> FilterOutput\nFilterOutput sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['ITEmployees'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> OutputStream"
+			"script": "source(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Employees\nEmployees filter(equals(department, '1')) ~> FilterOutput\nFilterOutput sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['ITEmployees'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> OutputStream"
 		}
 	}
 }
