@@ -1,12 +1,12 @@
 {
-	"name": "SelectDF_copy1",
+	"name": "SelectDF",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "Employees1DS",
+						"referenceName": "EmployeesDS",
 						"type": "DatasetReference"
 					},
 					"name": "employees"
