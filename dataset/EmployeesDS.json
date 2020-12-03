@@ -16,13 +16,24 @@
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
+			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
 		"schema": [
 			{
+				"name": "EmpId",
 				"type": "String"
 			},
 			{
+				"name": "EmpName",
+				"type": "String"
+			},
+			{
+				"name": "department",
+				"type": "String"
+			},
+			{
+				"name": "Country",
 				"type": "String"
 			}
 		]
