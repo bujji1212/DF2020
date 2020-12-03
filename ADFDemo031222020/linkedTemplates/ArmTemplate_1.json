@@ -669,6 +669,38 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/EmpDemoWDF')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "WranglingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"name": "EmployeeDS",
+							"script": "",
+							"dataset": {
+								"referenceName": "EmployeeDS",
+								"type": "DatasetReference"
+							}
+						}
+					],
+					"sinks": [
+						{
+							"name": "Sink1",
+							"dataset": {
+								"referenceName": "OutputDSDF",
+								"type": "DatasetReference"
+							},
+							"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink1"
+						}
+					],
+					"script": "section Section1;\r\nshared EmployeeDS = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azurestorage03122020.blob.core.windows.net/azurecontainer1/input/Employee.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = EmployeeDS\r\nin\r\n  Source;\r\n"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/FilterDF')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -980,55 +1012,6 @@
 						}
 					],
 					"script": "source(output(\n\t\tEmpName as string,\n\t\tdepartment as short,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Emp\nEmp sort(asc(EmpName, true),\n\tcaseInsensitive: true,\n\tpartitionBy('hash', 1)) ~> Sort1\nSort1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['empnamesorting.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/UnionDF')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ITEmployeesDS",
-								"type": "DatasetReference"
-							},
-							"name": "ITEmployees"
-						},
-						{
-							"dataset": {
-								"referenceName": "HREmployeesDS",
-								"type": "DatasetReference"
-							},
-							"name": "HREmployees"
-						},
-						{
-							"dataset": {
-								"referenceName": "PayrollEmployeesDS",
-								"type": "DatasetReference"
-							},
-							"name": "PayrollEmployees"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "OutputDSDF",
-								"type": "DatasetReference"
-							},
-							"name": "Output"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Union1"
-						}
-					],
-					"script": "source(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ITEmployees\nsource(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> HREmployees\nsource(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> PayrollEmployees\nITEmployees, HREmployees, PayrollEmployees union(byName: true)~> Union1\nUnion1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['AllEmployees.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Output"
 				}
 			},
 			"dependsOn": []
