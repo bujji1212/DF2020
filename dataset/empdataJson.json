@@ -1,0 +1,47 @@
+{
+	"name": "empdataJson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureLinkedSer1Input",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "empdata.json",
+				"folderPath": "input",
+				"container": "azurecontainer1"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string"
+				},
+				"name": {
+					"type": "string"
+				},
+				"skills": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"contact": {
+					"type": "object",
+					"properties": {
+						"Phone": {
+							"type": "string"
+						},
+						"email": {
+							"type": "string"
+						}
+					}
+				}
+			}
+		}
+	}
+}

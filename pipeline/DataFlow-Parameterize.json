@@ -1,0 +1,43 @@
+{
+	"name": "DataFlow-Parameterize",
+	"properties": {
+		"activities": [
+			{
+				"name": "ParametrizeDF",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "ParametrizeDF",
+						"type": "DataFlowReference",
+						"parameters": {
+							"deptname": {
+								"value": "'@{pipeline().parameters.DepartmentName}'",
+								"type": "Expression"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"parameters": {
+			"DepartmentName": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
