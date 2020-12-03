@@ -1,0 +1,30 @@
+{
+	"name": "EmployeeDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureLinkedSer1Input",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Employee.csv",
+				"folderPath": "input",
+				"container": "azurecontainer1"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"type": "String"
+			},
+			{
+				"type": "String"
+			}
+		]
+	}
+}
