@@ -33,7 +33,7 @@
 					"name": "Exists1"
 				}
 			],
-			"script": "source(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as string,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Employees\nsource(output(\n\t\tDepID as short,\n\t\tDeptName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Department\nEmployees, Department exists(department == DepID,\n\tnegate:true,\n\tbroadcast: 'auto')~> Exists1\nExists1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['DepartNotExistsEmployees'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> EmployeesExists"
+			"script": "source(output(\n\t\tEmpId as string,\n\t\tEmpName as string,\n\t\tdepartment as short,\n\t\tCountry as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Employees\nsource(output(\n\t\tDepID as short,\n\t\tDeptName as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Department\nEmployees, Department exists(department == DepID,\n\tnegate:true,\n\tbroadcast: 'auto')~> Exists1\nExists1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['DepartNotExistsEmployees'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> EmployeesExists"
 		}
 	}
 }
