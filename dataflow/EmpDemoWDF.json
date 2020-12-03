@@ -1,0 +1,29 @@
+{
+	"name": "EmpDemoWDF",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "EmployeeDS",
+					"script": "",
+					"dataset": {
+						"referenceName": "EmployeeDS",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"sinks": [
+				{
+					"name": "Sink1",
+					"dataset": {
+						"referenceName": "OutputDSDF",
+						"type": "DatasetReference"
+					},
+					"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink1"
+				}
+			],
+			"script": "section Section1;\r\nshared EmployeeDS = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azurestorage03122020.blob.core.windows.net/azurecontainer1/input/Employee.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = EmployeeDS\r\nin\r\n  Source;\r\n"
+		}
+	}
+}
