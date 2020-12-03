@@ -9,20 +9,6 @@
 					"referenceName": "MoveTransform - CopyBlobData",
 					"type": "PipelineReference"
 				}
-			},
-			{
-				"pipelineReference": {
-					"referenceName": "MoveTransform - CopyOnPremises",
-					"type": "PipelineReference"
-				},
-				"parameters": {
-					"dbNamefromPipeline": "Mine_Mccoy",
-					"tblnamefrompipeline": "A",
-					"usernamefrompipeline": "testuser",
-					"pwdfrompipeline": "testuser@123",
-					"servernamefrompipeline": "seshukumar",
-					"destinationtable": "B"
-				}
 			}
 		],
 		"type": "ScheduleTrigger",
