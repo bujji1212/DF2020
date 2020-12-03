@@ -1,0 +1,24 @@
+{
+	"name": "UnpivotDF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "UnPivotedDS",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "Unpivot1"
+				}
+			],
+			"script": "source(output(\n\t\tPO as string,\n\t\tVendor as string,\n\t\tApple as string,\n\t\tMango as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 unpivot(output(\n\t\tFruits as string,\n\t\tAmout as string\n\t),\n\tungroupBy({} = PO,\n\t\t{} = Vendor),\n\tlateral: true,\n\tignoreNullPivots: false) ~> Unpivot1"
+		}
+	}
+}

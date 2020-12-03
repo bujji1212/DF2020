@@ -26,7 +26,7 @@
 					"name": "Flatten1"
 				}
 			],
-			"script": "source(output(\n\t\tcontact as (Phone as string, email as string),\n\t\tid as string,\n\t\tname as string,\n\t\tskills as string[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'singleDocument') ~> employees\nemployees foldDown(unroll(skills),\n\tmapColumn(\n\t\tcontact,\n\t\tid,\n\t\tname,\n\t\tskills\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> Flatten1\nFlatten1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Flattenoutput.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
+			"script": "source(output(\n\t\tid as string,\n\t\tname as string,\n\t\tskills as string[]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'singleDocument') ~> employees\nemployees foldDown(unroll(skills),\n\tmapColumn(\n\t\tid,\n\t\tname,\n\t\tskills = skills\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> Flatten1\nFlatten1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Flattenoutput.csv'],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1"
 		}
 	}
 }

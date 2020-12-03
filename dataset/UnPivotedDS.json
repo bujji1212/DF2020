@@ -1,0 +1,41 @@
+{
+	"name": "UnPivotedDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureLinkedSer1Input",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "vendordata.csv",
+				"folderPath": "input",
+				"container": "azurecontainer1"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "PO",
+				"type": "String"
+			},
+			{
+				"name": "Vendor",
+				"type": "String"
+			},
+			{
+				"name": "Apple",
+				"type": "String"
+			},
+			{
+				"name": "Mango",
+				"type": "String"
+			}
+		]
+	}
+}
