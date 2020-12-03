@@ -1047,6 +1047,44 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/WranglingDataFlow-MergeQueries')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "MergeQueriesWDF",
+						"type": "ExecuteWranglingDataflow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "MergeQueriesWDF",
+								"type": "DataFlowReference",
+								"datasetParameters": {
+									"DepartmentDS": {},
+									"EmployeeDS": {},
+									"Sink1": {}
+								}
+							},
+							"staging": {}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/MergeQueriesWDF')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DepartmentDS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2124,6 +2162,50 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/EmployeesDS')]",
 				"[concat(variables('factoryId'), '/datasets/DepartmentDS')]",
+				"[concat(variables('factoryId'), '/datasets/OutputDSDF')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MergeQueriesWDF')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "WranglingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"name": "DepartmentDS",
+							"script": "",
+							"dataset": {
+								"referenceName": "DepartmentDS",
+								"type": "DatasetReference"
+							}
+						},
+						{
+							"name": "EmployeeDS",
+							"script": "",
+							"dataset": {
+								"referenceName": "EmployeeDS",
+								"type": "DatasetReference"
+							}
+						}
+					],
+					"sinks": [
+						{
+							"name": "Sink1",
+							"dataset": {
+								"referenceName": "OutputDSDF",
+								"type": "DatasetReference"
+							},
+							"script": "sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Sink1"
+						}
+					],
+					"script": "section Section1;\r\nshared DepartmentDS = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azurestorage03122020.blob.core.windows.net/azurecontainer1/input/Department.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared EmployeeDS = let\r\n  AdfDoc = AzureStorage.BlobContents(\"https://azurestorage03122020.blob.core.windows.net/azurecontainer1/input/Employee.csv\"),\r\n  Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]),\r\n  PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])\r\nin\r\n  PromotedHeaders;\r\nshared UserQuery = let\r\n  Source = DepartmentDS,\r\n  #\"Merged queries\" = Table.NestedJoin(Source, {\"DepID\"}, EmployeeDS, {\"EmpId\"}, \"EmployeeDS\", JoinKind.Inner),\r\n  #\"Expanded EmployeeDS\" = Table.ExpandTableColumn(#\"Merged queries\", \"EmployeeDS\", {\"EmpId\", \"EmpName\", \"department\", \"Country\"}, {\"EmployeeDS.EmpId\", \"EmployeeDS.EmpName\", \"EmployeeDS.department\", \"EmployeeDS.Country\"}),\r\n  #\"Removed columns\" = Table.RemoveColumns(#\"Expanded EmployeeDS\", {\"DepID\"}),\r\n  #\"Reordered columns\" = Table.ReorderColumns(#\"Removed columns\", {\"EmployeeDS.EmpId\", \"EmployeeDS.EmpName\", \"DeptName\", \"EmployeeDS.department\", \"EmployeeDS.Country\"}),\r\n  #\"Removed columns 1\" = Table.RemoveColumns(#\"Reordered columns\", {\"EmployeeDS.department\"})\r\nin\r\n  #\"Removed columns 1\";\r\n"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DepartmentDS')]",
+				"[concat(variables('factoryId'), '/datasets/EmployeeDS')]",
 				"[concat(variables('factoryId'), '/datasets/OutputDSDF')]"
 			]
 		},
