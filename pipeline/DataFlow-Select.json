@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "SelectDF",
+				"name": "SelectDF_copy1",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "SelectDF",
+						"referenceName": "SelectDF_copy1",
 						"type": "DataFlowReference"
 					},
 					"compute": {
