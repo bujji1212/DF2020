@@ -12,7 +12,7 @@
 				"type": "AzureBlobStorageLocation",
 				"fileName": "data.txt",
 				"folderPath": "input",
-				"container": "azurecontainer1"
+				"container": "container2021"
 			}
 		}
 	},
